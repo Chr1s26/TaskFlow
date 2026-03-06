@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.project</groupId>
-	<artifactId>testFlow</artifactId>
+	<artifactId>taskFlow</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>testFlow</name>
+	<name>taskFlow</name>
 	<description>Personal Test Flow project for Spring Boot</description>
 	<url/>
 	<licenses>
