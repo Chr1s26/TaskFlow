@@ -22,7 +22,7 @@ public class TaskController {
     public ResponseEntity<?> getTasks(@RequestParam(required = false) Priority priority,
                                       @RequestParam(required = false)TaskStatus status,
                                       Pageable pageable){
-        Page<TaskResponse> tasks = taskService.getTask(status,priority,pageable);
+        Page<TaskResponse> tasks = taskService.getTasks(status,priority,pageable);
         return ResponseEntity.status(HttpStatus.OK).body(tasks);
     }
 

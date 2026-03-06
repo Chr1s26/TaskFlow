@@ -7,7 +7,6 @@ import com.project.testFlow.exception.UnauthorizedException;
 import com.project.testFlow.model.Task;
 import com.project.testFlow.model.User;
 import com.project.testFlow.model.constant.Priority;
-import com.project.testFlow.model.constant.Role;
 import com.project.testFlow.model.constant.TaskStatus;
 import com.project.testFlow.repository.TaskRepository;
 import com.project.testFlow.repository.UserRepository;
@@ -27,15 +26,11 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public TaskResponse createTask(TaskCreateRequest request) {
-        User user = new User();
-        user.setId(1L);
-        user.setName("Chris");
-        user.setEmail("htetkyawswar44@gmail.com");
-        user.setEnable(true);
-        user.setRole(Role.USER);
-        user.setCreatedAt(LocalDateTime.now());
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         Task task = new Task();
+
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setStatus(TaskStatus.TODO);
@@ -50,13 +45,8 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public TaskResponse updateTask(Long id, TaskCreateRequest request) {
-        User user = new User();
-        user.setId(1L);
-        user.setName("Chris");
-        user.setEmail("htetkyawswar44@gmail.com");
-        user.setEnable(true);
-        user.setRole(Role.USER);
-        user.setCreatedAt(LocalDateTime.now());
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
@@ -76,13 +66,8 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public void deleteTask(Long id) {
-        User user = new User();
-        user.setId(1L);
-        user.setName("Chris");
-        user.setEmail("htetkyawswar44@gmail.com");
-        user.setEnable(true);
-        user.setRole(Role.USER);
-        user.setCreatedAt(LocalDateTime.now());
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
@@ -93,14 +78,9 @@ public class TaskServiceImpl implements TaskService{
     }
 
     @Override
-    public Page<TaskResponse> getTask(TaskStatus status, Priority priority, Pageable pageable) {
-        User user = new User();
-        user.setId(1L);
-        user.setName("Chris");
-        user.setEmail("htetkyawswar44@gmail.com");
-        user.setEnable(true);
-        user.setRole(Role.USER);
-        user.setCreatedAt(LocalDateTime.now());
+    public Page<TaskResponse> getTasks(TaskStatus status, Priority priority, Pageable pageable) {
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         Page<Task> tasks;
 
@@ -116,10 +96,6 @@ public class TaskServiceImpl implements TaskService{
 
         return tasks.map(this::mapToResponse);
     }
-
-//    private User getCurrentUser(){
-//
-//    }
 
     private TaskResponse mapToResponse(Task task){
         TaskResponse response = new TaskResponse();

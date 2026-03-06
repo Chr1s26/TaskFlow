@@ -11,5 +11,5 @@ public interface TaskService {
     public TaskResponse createTask(TaskCreateRequest request);
     public TaskResponse updateTask(Long id, TaskCreateRequest request);
     public void deleteTask(Long id);
-    public Page<TaskResponse> getTask(TaskStatus status, Priority priority, Pageable pageable);
+    public Page<TaskResponse> getTasks(TaskStatus status, Priority priority, Pageable pageable);
 }

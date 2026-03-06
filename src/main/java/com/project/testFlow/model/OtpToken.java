@@ -9,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "otp_tokens")
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Data
 public class OtpToken {
     @Id
