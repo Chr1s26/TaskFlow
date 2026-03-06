@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(){

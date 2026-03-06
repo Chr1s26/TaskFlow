@@ -26,7 +26,7 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public TaskResponse createTask(TaskCreateRequest request) {
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(2L)
                 .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         Task task = new Task();
@@ -45,7 +45,7 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public TaskResponse updateTask(Long id, TaskCreateRequest request) {
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(2L)
                 .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         Task task = taskRepository.findById(id)
@@ -61,12 +61,13 @@ public class TaskServiceImpl implements TaskService{
         task.setDueDate(request.getDueDate());
         task.setUpdatedAt(LocalDateTime.now());
 
-        return mapToResponse(task);
+        Task updatedTask = taskRepository.save(task);
+        return mapToResponse(updatedTask);
     }
 
     @Override
     public void deleteTask(Long id) {
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(2L)
                 .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         Task task = taskRepository.findById(id)
@@ -79,7 +80,7 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public Page<TaskResponse> getTasks(TaskStatus status, Priority priority, Pageable pageable) {
-        User user = userRepository.findById(1L)
+        User user = userRepository.findById(2L)
                 .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         Page<Task> tasks;
