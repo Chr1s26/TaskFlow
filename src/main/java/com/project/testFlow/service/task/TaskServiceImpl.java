@@ -7,6 +7,7 @@ import com.project.testFlow.exception.UnauthorizedException;
 import com.project.testFlow.model.Task;
 import com.project.testFlow.model.User;
 import com.project.testFlow.model.constant.Priority;
+import com.project.testFlow.model.constant.Role;
 import com.project.testFlow.model.constant.TaskStatus;
 import com.project.testFlow.repository.TaskRepository;
 import com.project.testFlow.repository.UserRepository;
@@ -27,6 +28,12 @@ public class TaskServiceImpl implements TaskService{
     @Override
     public TaskResponse createTask(TaskCreateRequest request) {
         User user = new User();
+        user.setId(1L);
+        user.setName("Chris");
+        user.setEmail("htetkyawswar44@gmail.com");
+        user.setEnable(true);
+        user.setRole(Role.USER);
+        user.setCreatedAt(LocalDateTime.now());
 
         Task task = new Task();
         task.setTitle(request.getTitle());
@@ -44,6 +51,13 @@ public class TaskServiceImpl implements TaskService{
     @Override
     public TaskResponse updateTask(Long id, TaskCreateRequest request) {
         User user = new User();
+        user.setId(1L);
+        user.setName("Chris");
+        user.setEmail("htetkyawswar44@gmail.com");
+        user.setEnable(true);
+        user.setRole(Role.USER);
+        user.setCreatedAt(LocalDateTime.now());
+
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
 
@@ -63,6 +77,13 @@ public class TaskServiceImpl implements TaskService{
     @Override
     public void deleteTask(Long id) {
         User user = new User();
+        user.setId(1L);
+        user.setName("Chris");
+        user.setEmail("htetkyawswar44@gmail.com");
+        user.setEnable(true);
+        user.setRole(Role.USER);
+        user.setCreatedAt(LocalDateTime.now());
+
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         if(!task.getUser().getId().equals(user.getId())){
@@ -73,7 +94,27 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public Page<TaskResponse> getTask(TaskStatus status, Priority priority, Pageable pageable) {
-        return null;
+        User user = new User();
+        user.setId(1L);
+        user.setName("Chris");
+        user.setEmail("htetkyawswar44@gmail.com");
+        user.setEnable(true);
+        user.setRole(Role.USER);
+        user.setCreatedAt(LocalDateTime.now());
+
+        Page<Task> tasks;
+
+        if(status != null && priority != null){
+            tasks = taskRepository.findByUserAndStatusAndPriority(user,status,priority,pageable);
+        }else if(status != null){
+            tasks = taskRepository.findByUserAndStatus(user,status,pageable);
+        }else if(priority != null){
+            tasks = taskRepository.findByUserAndPriority(user,priority,pageable);
+        }else{
+            tasks = taskRepository.findByUser(user,pageable);
+        }
+
+        return tasks.map(this::mapToResponse);
     }
 
 //    private User getCurrentUser(){
