@@ -5,6 +5,7 @@ import com.project.taskFlow.dto.TaskResponse;
 import com.project.taskFlow.model.constant.Priority;
 import com.project.taskFlow.model.constant.TaskStatus;
 import com.project.taskFlow.service.task.TaskService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,13 +28,13 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createTask(@RequestBody TaskCreateRequest request){
+    public ResponseEntity<?> createTask(@Valid @RequestBody TaskCreateRequest request){
         TaskResponse taskResponse = taskService.createTask(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(taskResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody TaskCreateRequest request){
+    public ResponseEntity<?> updateTask(@PathVariable Long id, @Valid @RequestBody TaskCreateRequest request){
         TaskResponse taskResponse = taskService.updateTask(id,request);
         return ResponseEntity.status(HttpStatus.OK).body(taskResponse);
     }

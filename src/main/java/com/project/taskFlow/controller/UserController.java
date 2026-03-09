@@ -4,6 +4,7 @@ import com.project.taskFlow.dto.UserCreateRequest;
 import com.project.taskFlow.dto.UserResponse;
 import com.project.taskFlow.dto.UserUpdateRequest;
 import com.project.taskFlow.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(){
-        UserResponse userResponse = userService.getCurrentUser();
+        UserResponse userResponse = userService.getCurrentUserResponse();
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
@@ -30,13 +31,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request){
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateRequest request){
         UserResponse userResponse = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request){
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest request){
         UserResponse userResponse = userService.updateUser(id,request);
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }

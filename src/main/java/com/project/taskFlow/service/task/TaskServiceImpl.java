@@ -10,6 +10,7 @@ import com.project.taskFlow.model.constant.Priority;
 import com.project.taskFlow.model.constant.TaskStatus;
 import com.project.taskFlow.repository.TaskRepository;
 import com.project.taskFlow.repository.UserRepository;
+import com.project.taskFlow.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +24,11 @@ public class TaskServiceImpl implements TaskService{
 
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final UserService userService;
 
     @Override
     public TaskResponse createTask(TaskCreateRequest request) {
-        User user = userRepository.findById(2L)
-                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
+        User user = userService.getCurrentUser();
 
         Task task = new Task();
 
@@ -45,8 +46,7 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public TaskResponse updateTask(Long id, TaskCreateRequest request) {
-        User user = userRepository.findById(2L)
-                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
+        User user = userService.getCurrentUser();
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
@@ -67,8 +67,7 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public void deleteTask(Long id) {
-        User user = userRepository.findById(2L)
-                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
+        User user = userService.getCurrentUser();
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
@@ -80,8 +79,7 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public Page<TaskResponse> getTasks(TaskStatus status, Priority priority, Pageable pageable) {
-        User user = userRepository.findById(2L)
-                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
+        User user = userService.getCurrentUser();
 
         Page<Task> tasks;
 

@@ -1,4 +1,4 @@
-package com.project.taskFlow.dto;
+package com.project.taskFlow.security.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -6,12 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateRequest {
+@NoArgsConstructor
+public class LoginRequest {
     @NotBlank
-    private String name;
+    String username;
     @NotBlank
-    private String email;
-    private String profileImageUrl;
+    String password;
 }

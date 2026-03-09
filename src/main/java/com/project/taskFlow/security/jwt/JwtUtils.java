@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
@@ -71,7 +72,8 @@ public class JwtUtils {
 //    }
 
     //Generating Token from UserName
-    public String generateTokenFromUsername(String username){
+    public String generateTokenFromUsername(UserDetails userDetails){
+        String username = userDetails.getUsername();
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())

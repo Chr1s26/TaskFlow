@@ -38,7 +38,7 @@ public class UserDetailsImpl implements UserDetails {
 
     public static UserDetailsImpl build(User user) {
         GrantedAuthority authority =
-                new SimpleGrantedAuthority(user.getRole().name());
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
         return new UserDetailsImpl(user.getId(),user.getName(),user.getEmail(),user.getPassword(),List.of(authority)
         );
     }
