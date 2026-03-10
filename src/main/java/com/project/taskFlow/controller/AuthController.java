@@ -1,33 +1,22 @@
 package com.project.taskFlow.controller;
 
-import com.project.taskFlow.model.User;
-import com.project.taskFlow.model.constant.Role;
 import com.project.taskFlow.repository.UserRepository;
-import com.project.taskFlow.security.jwt.JwtUtils;
-import com.project.taskFlow.security.request.LoginRequest;
-import com.project.taskFlow.security.request.SignupRequest;
+import com.project.taskFlow.security.request.*;
 import com.project.taskFlow.security.response.MessageResponse;
 import com.project.taskFlow.security.response.UserInfoResponse;
-import com.project.taskFlow.security.services.UserDetailsImpl;
 import com.project.taskFlow.service.authentication.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -69,7 +58,7 @@ public class AuthController {
         }
 
         authService.registerUser(signupRequest);
-        return ResponseEntity.ok(new MessageResponse("User register successfully!"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("User register successfully!"));
     }
 
     @GetMapping("/username")
@@ -89,6 +78,25 @@ public class AuthController {
 
     @PostMapping("/signout")
     public ResponseEntity<?> logoutUser(){
+        SecurityContextHolder.clearContext();
         return ResponseEntity.ok().body(new MessageResponse("Logout successfully!"));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request){
+        authService.forgotPassword(request.getEmail());
+        return ResponseEntity.ok().body(new MessageResponse("OTP sent to email"));
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@Valid @RequestBody VerifyOtpRequest request){
+        authService.verifyOtp(request.getEmail(), request.getOtp());
+        return ResponseEntity.ok(new MessageResponse("OTP verified"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request){
+        authService.resetPassword(request.getEmail(), request.getNewPassword());
+        return ResponseEntity.ok(new MessageResponse("Password reset successful"));
     }
 }

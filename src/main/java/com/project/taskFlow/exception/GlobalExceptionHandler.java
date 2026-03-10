@@ -1,6 +1,7 @@
 package com.project.taskFlow.exception;
 
 import com.project.taskFlow.dto.ErrorDto;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -89,5 +90,31 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<?> handleAccessDenied(MessagingException ex, HttpServletRequest request) {
+
+        ErrorDto body = new ErrorDto(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                "OTP Message Fails",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    @ExceptionHandler(SendOtpFailedException.class)
+    public ResponseEntity<?> handleAccessDenied(SendOtpFailedException ex, HttpServletRequest request) {
+
+        ErrorDto body = new ErrorDto(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                "Error When sending OTP",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 }

@@ -1,6 +1,7 @@
 package com.project.taskFlow.service.authentication;
 
 import com.project.taskFlow.dto.UserResponse;
+import com.project.taskFlow.exception.ResourceNotFoundException;
 import com.project.taskFlow.model.User;
 import com.project.taskFlow.model.constant.Role;
 import com.project.taskFlow.repository.UserRepository;
@@ -9,6 +10,7 @@ import com.project.taskFlow.security.request.LoginRequest;
 import com.project.taskFlow.security.request.SignupRequest;
 import com.project.taskFlow.security.response.UserInfoResponse;
 import com.project.taskFlow.security.services.UserDetailsImpl;
+import com.project.taskFlow.service.otp.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,7 @@ public class AuthServiceImpl implements AuthService{
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
 
     @Override
     public UserInfoResponse authenticateUser(Authentication authentication) {
@@ -66,5 +69,23 @@ public class AuthServiceImpl implements AuthService{
                 .getAuthority();
         UserInfoResponse response = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),role);
         return response;
+    }
+
+    @Override
+    public void forgotPassword(String email) {
+        otpService.sendOtp(email);
+    }
+
+    @Override
+    public void verifyOtp(String email, String otp) {
+        otpService.isOtpValid(email,otp);
+    }
+
+    @Override
+    public void resetPassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

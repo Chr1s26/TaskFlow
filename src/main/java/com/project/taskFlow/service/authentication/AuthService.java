@@ -5,7 +5,10 @@ import com.project.taskFlow.security.response.UserInfoResponse;
 import org.springframework.security.core.Authentication;
 
 public interface AuthService {
-    public UserInfoResponse authenticateUser(Authentication authentication);
-    public void registerUser(SignupRequest signupRequest);
-    public UserInfoResponse getUserDetails(Authentication authentication);
+    UserInfoResponse authenticateUser(Authentication authentication);
+    void registerUser(SignupRequest signupRequest);
+    UserInfoResponse getUserDetails(Authentication authentication);
+    void forgotPassword(String email);
+    void verifyOtp(String email, String otp);
+    void resetPassword(String email, String newPassword);
 }
