@@ -34,3 +34,36 @@ build/
 
 ### Ignore Properties file ###
 src/main/resources/application.properties
+
+# =========================
+# Java / Spring Boot
+# =========================
+backend/target/
+backend/*.log
+backend/.classpath
+backend/.project
+backend/.settings/
+
+# Maven wrapper
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# =========================
+# Node / Vue
+# =========================
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# =========================
+# IDE
+# =========================
+.idea/
+.vscode/
+*.iml
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
