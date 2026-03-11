@@ -46,7 +46,7 @@ public class OtpServiceImpl implements OtpService {
     public void sendOtp(String email) {
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Email not found"));
 
         otpTokenRepository.deleteByEmail(email);
 
