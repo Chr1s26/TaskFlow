@@ -26,25 +26,23 @@ pipeline {
 
         stage('Build Backend Image') {
             steps {
-                sh 'docker build -t htetkyawswarlinn/taskflow-backend ./backend'
+                sh '''
+                docker buildx build \
+                --platform linux/amd64 \
+                -t htetkyawswarlinn/taskflow-backend:latest \
+                --push ./backend
+                '''
             }
         }
 
         stage('Build Frontend Image') {
             steps {
-                sh 'docker build -t htetkyawswarlinn/taskflow-frontend ./frontend'
-            }
-        }
-
-        stage('Push Backend Image') {
-            steps {
-                sh 'docker push htetkyawswarlinn/taskflow-backend'
-            }
-        }
-
-        stage('Push Frontend Image') {
-            steps {
-                sh 'docker push htetkyawswarlinn/taskflow-frontend'
+                sh '''
+                docker buildx build \
+                --platform linux/amd64 \
+                -t htetkyawswarlinn/taskflow-frontend:latest \
+                --push ./frontend
+                '''
             }
         }
 
@@ -54,8 +52,8 @@ pipeline {
                 sh '''
                 ssh -o StrictHostKeyChecking=no ubuntu@3.106.240.218 "
                 cd taskflow &&
-                docker compose pull &&
-                docker compose up -d
+                docker-compose pull &&
+                docker-compose up -d
                 "
                 '''
             }
