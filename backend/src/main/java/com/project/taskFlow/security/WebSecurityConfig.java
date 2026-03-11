@@ -61,6 +61,7 @@ public class WebSecurityConfig {
                         .requestMatchers(("/swagger-ui/**")).permitAll()
                         .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
+                        .requestMatchers("/github-webhook/**").permitAll()
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());
