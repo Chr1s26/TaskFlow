@@ -34,7 +34,7 @@ public class TaskServiceImpl implements TaskService{
 
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
-        task.setStatus(TaskStatus.TODO);
+        task.setStatus(request.getStatus());
         task.setPriority(request.getPriority());
         task.setDueDate(request.getDueDate());
         task.setCreatedAt(LocalDateTime.now());
@@ -59,6 +59,7 @@ public class TaskServiceImpl implements TaskService{
         task.setDescription(request.getDescription());
         task.setPriority(request.getPriority());
         task.setDueDate(request.getDueDate());
+        task.setStatus(request.getStatus());
         task.setUpdatedAt(LocalDateTime.now());
 
         Task updatedTask = taskRepository.save(task);

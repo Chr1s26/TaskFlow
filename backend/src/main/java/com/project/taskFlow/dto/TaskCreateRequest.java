@@ -1,6 +1,7 @@
 package com.project.taskFlow.dto;
 
 import com.project.taskFlow.model.constant.Priority;
+import com.project.taskFlow.model.constant.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,5 +17,7 @@ public class TaskCreateRequest {
     private String description;
     @NotNull
     private Priority priority;
+    @NotNull
+    private TaskStatus status;
     private LocalDateTime dueDate;
 }

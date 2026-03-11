@@ -72,6 +72,9 @@ public class AuthController {
 
     @GetMapping("/user")
     public ResponseEntity<?> getUserDetails(Authentication authentication){
+        if(authentication == null || !authentication.isAuthenticated()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         UserInfoResponse response = authService.getUserDetails(authentication);
         return ResponseEntity.ok().body(response);
     }

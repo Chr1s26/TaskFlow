@@ -7,6 +7,14 @@ const api = axios.create({
   }
 })
 
+const publicEndpoints = [
+  "/auth/signin",
+  "/auth/signup",
+  "/auth/forgot-password",
+  "/auth/verify-otp",
+  "/auth/reset-password"
+]
+
 api.interceptors.request.use((config) => {
 
   const token = localStorage.getItem("token")
@@ -14,7 +22,7 @@ api.interceptors.request.use((config) => {
   if (
     token &&
     config.url &&
-    !config.url.startsWith("/auth")
+    !publicEndpoints.some(e => config.url.startsWith(e))
   ) {
     config.headers.Authorization = `Bearer ${token}`
   }

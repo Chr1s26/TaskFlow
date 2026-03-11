@@ -5,6 +5,8 @@ import SignupView from "../views/SignupView.vue"
 import ForgotPasswordView from "../views/ForgotPasswordView.vue"
 import VerifyOtpView from "../views/VerifyOtpView.vue"
 import ResetPasswordView from "../views/ResetPasswordView.vue"
+import TaskHomeView from "../views/TaskHomeView.vue"
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -39,6 +41,11 @@ const router = createRouter({
       path: "/reset-password",
       name: "reset-password",
       component: ResetPasswordView
+    },
+
+    {
+      path:"/tasks",
+      component:TaskHomeView
     }
   ]
 })
