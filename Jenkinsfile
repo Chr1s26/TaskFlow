@@ -51,7 +51,7 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 sh '''
-                ssh ubuntu@$EC2_IP "
+                ssh -o StrictHostKeyChecking=no ubuntu@3.106.240.218 "
                 cd taskflow &&
                 docker compose pull &&
                 docker compose up -d
