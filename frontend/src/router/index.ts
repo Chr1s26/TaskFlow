@@ -6,6 +6,8 @@ import ForgotPasswordView from "../views/ForgotPasswordView.vue"
 import VerifyOtpView from "../views/VerifyOtpView.vue"
 import ResetPasswordView from "../views/ResetPasswordView.vue"
 import TaskHomeView from "../views/TaskHomeView.vue"
+import AdminView from "../views/AdminView.vue"
+
 
 
 const router = createRouter({
@@ -46,6 +48,11 @@ const router = createRouter({
     {
       path:"/tasks",
       component:TaskHomeView
+    },
+
+    {
+      path: "/admin",
+      component: AdminView
     }
   ]
 })

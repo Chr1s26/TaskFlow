@@ -3,69 +3,69 @@
 import { ref,onMounted } from "vue"
 import { useRouter } from "vue-router"
 import api from "../api/api"
+import { getErrorMessage } from "../utils/error"
 
 const router = useRouter()
 
-const username = ref("User")
-const role = ref("USER")
-
 const tasks = ref<any[]>([])
+const username = ref("")
+const role = ref("")
+
+const error = ref("")
+const success = ref("")
 
 const page = ref(0)
 const totalPages = ref(0)
 const size = 5
 
-const editingTaskId = ref<number|null>(null)
-
 const filterPriority = ref("")
 const filterStatus = ref("")
+
+const editingTaskId = ref<number|null>(null)
 
 const newTask = ref({
   title:"",
   description:"",
   priority:"LOW",
   status:"TODO",
-  dueDate:""
+  dueDate:null
 })
 
-/* ---------------- USER INFO ---------------- */
+const editingTask = ref<any>({})
+
+/* ---------------- USER ---------------- */
 
 const loadUser = async ()=>{
 
   try{
 
-    const res = await api.get("/auth/user")
+    const res = await api.get("/users/me")
 
-    username.value = res.data.username
-    role.value = res.data.role.replace("ROLE_","")
+    username.value = res.data.name
+    role.value = res.data.role
 
   }catch{
 
     localStorage.removeItem("token")
+
     router.push("/login")
 
   }
 
 }
 
-/* ---------------- LOAD TASKS ---------------- */
+/* ---------------- TASKS ---------------- */
 
 const loadTasks = async ()=>{
 
-  const params:any = {
-    page:page.value,
-    size:size
-  }
-
-  if(filterPriority.value){
-    params.priority = filterPriority.value
-  }
-
-  if(filterStatus.value){
-    params.status = filterStatus.value
-  }
-
-  const res = await api.get("/tasks",{ params })
+  const res = await api.get("/tasks",{
+    params:{
+      page:page.value,
+      size:size,
+      priority:filterPriority.value || undefined,
+      status:filterStatus.value || undefined
+    }
+  })
 
   tasks.value = res.data.content
   totalPages.value = res.data.page.totalPages
@@ -73,45 +73,70 @@ const loadTasks = async ()=>{
 
 }
 
-/* ---------------- CREATE TASK ---------------- */
+/* ---------------- CREATE ---------------- */
 
 const createTask = async ()=>{
 
-  await api.post("/tasks",newTask.value)
+  error.value=""
+  success.value=""
 
-  newTask.value={
-    title:"",
-    description:"",
-    priority:"LOW",
-    status:"TODO",
-    dueDate:""
+  try{
+
+    await api.post("/tasks",newTask.value)
+
+    success.value="Task created successfully"
+
+    newTask.value={
+      title:"",
+      description:"",
+      priority:"LOW",
+      status:"TODO",
+      dueDate:null
+    }
+
+    loadTasks()
+
+  }catch(err:any){
+
+    error.value = getErrorMessage(err)
+
   }
 
-  page.value=0
-
-  loadTasks()
-
 }
 
-/* ---------------- EDIT ---------------- */
+/* ---------------- UPDATE ---------------- */
 
-const editTask = (task:any)=>{
+const startEdit = (task:any)=>{
+
   editingTaskId.value = task.id
+
+  editingTask.value = {...task}
+
 }
 
-const saveTask = async (task:any)=>{
+const saveEdit = async ()=>{
 
-  await api.put("/tasks/"+task.id,{
-    title:task.title,
-    description:task.description,
-    priority:task.priority,
-    status:task.taskStatus,
-    dueDate:task.dueDate
-  })
+  try{
 
-  editingTaskId.value=null
+        await api.put("/tasks/"+editingTaskId.value,{
+      title: editingTask.value.title,
+      description: editingTask.value.description,
+      priority: editingTask.value.priority,
+      status: editingTask.value.taskStatus,   
+      dueDate: editingTask.value.dueDate
+    })
 
-  loadTasks()
+    success.value="Task updated"
+
+    editingTaskId.value=null
+
+    loadTasks()
+
+  }catch(err:any){
+
+    error.value=getErrorMessage(err)
+
+  }
 
 }
 
@@ -119,9 +144,19 @@ const saveTask = async (task:any)=>{
 
 const deleteTask = async (id:number)=>{
 
-  await api.delete("/tasks/"+id)
+  try{
 
-  loadTasks()
+    await api.delete("/tasks/"+id)
+
+    success.value="Task deleted"
+
+    loadTasks()
+
+  }catch(err:any){
+
+    error.value=getErrorMessage(err)
+
+  }
 
 }
 
@@ -130,8 +165,11 @@ const deleteTask = async (id:number)=>{
 const nextPage = ()=>{
 
   if(page.value < totalPages.value-1){
+
     page.value++
+
     loadTasks()
+
   }
 
 }
@@ -139,35 +177,46 @@ const nextPage = ()=>{
 const prevPage = ()=>{
 
   if(page.value>0){
+
     page.value--
+
     loadTasks()
+
   }
 
 }
 
-/* ---------------- LOGOUT ---------------- */
+/* ---------------- FILTER ---------------- */
+
+const applyFilter = ()=>{
+
+  page.value=0
+
+  loadTasks()
+
+}
+
+/* ---------------- NAVIGATION ---------------- */
+
+const goAdmin = ()=>{
+
+  router.push("/admin")
+
+}
 
 const logout = ()=>{
 
   localStorage.removeItem("token")
+
   router.push("/login")
-
-}
-
-/* ---------------- DATE FORMAT ---------------- */
-
-const formatDate = (date:string)=>{
-
-  if(!date) return ""
-
-  return new Date(date).toLocaleString()
 
 }
 
 onMounted(async ()=>{
 
   await loadUser()
-  await loadTasks()
+
+  loadTasks()
 
 })
 
@@ -176,6 +225,8 @@ onMounted(async ()=>{
 <template>
 
 <div class="dashboard">
+
+<!-- HEADER -->
 
 <header class="header">
 
@@ -190,7 +241,7 @@ onMounted(async ()=>{
 <button
 v-if="role==='ADMIN'"
 class="admin-btn"
-@click="router.push('/admin')"
+@click="goAdmin"
 >
 Admin Panel
 </button>
@@ -206,6 +257,12 @@ Logout
 
 <div class="container">
 
+<!-- ERROR / SUCCESS -->
+
+<p v-if="error" class="error">{{error}}</p>
+<p v-if="success" class="success">{{success}}</p>
+
+
 <!-- CREATE TASK -->
 
 <div class="create-card">
@@ -217,36 +274,47 @@ Logout
 <input v-model="newTask.title" placeholder="Title"/>
 
 <select v-model="newTask.priority">
+
 <option value="LOW">LOW</option>
 <option value="MEDIUM">MEDIUM</option>
 <option value="HIGH">HIGH</option>
+
 </select>
 
 <select v-model="newTask.status">
+
 <option value="TODO">TODO</option>
 <option value="IN_PROGRESS">IN_PROGRESS</option>
 <option value="DONE">DONE</option>
+
 </select>
 
 <input type="datetime-local" v-model="newTask.dueDate"/>
 
-<button @click="createTask">Add</button>
+<button @click="createTask">
+Add Task
+</button>
 
 </div>
 
 <textarea
 v-model="newTask.description"
 placeholder="Description"
-></textarea>
+class="description"
+/>
 
 </div>
 
 
-<!-- FILTERS -->
+<!-- FILTER -->
+
+<div class="filter-card">
+
+<h3>Filter Tasks</h3>
 
 <div class="filter-row">
 
-<select v-model="filterPriority" @change="loadTasks">
+<select v-model="filterPriority">
 
 <option value="">All Priority</option>
 <option value="LOW">LOW</option>
@@ -255,7 +323,7 @@ placeholder="Description"
 
 </select>
 
-<select v-model="filterStatus" @change="loadTasks">
+<select v-model="filterStatus">
 
 <option value="">All Status</option>
 <option value="TODO">TODO</option>
@@ -264,6 +332,12 @@ placeholder="Description"
 
 </select>
 
+<button @click="applyFilter">
+Apply
+</button>
+
+</div>
+
 </div>
 
 
@@ -271,17 +345,21 @@ placeholder="Description"
 
 <div class="table-card">
 
+<h3>Your Tasks</h3>
+
 <table>
 
 <thead>
 
 <tr>
+
 <th>Title</th>
 <th>Description</th>
 <th>Priority</th>
 <th>Status</th>
 <th>Due Date</th>
 <th>Actions</th>
+
 </tr>
 
 </thead>
@@ -294,7 +372,7 @@ placeholder="Description"
 
 <input
 v-if="editingTaskId===task.id"
-v-model="task.title"
+v-model="editingTask.title"
 />
 
 <span v-else>{{task.title}}</span>
@@ -305,7 +383,7 @@ v-model="task.title"
 
 <input
 v-if="editingTaskId===task.id"
-v-model="task.description"
+v-model="editingTask.description"
 />
 
 <span v-else>{{task.description}}</span>
@@ -316,11 +394,13 @@ v-model="task.description"
 
 <select
 v-if="editingTaskId===task.id"
-v-model="task.priority"
+v-model="editingTask.priority"
 >
+
 <option>LOW</option>
 <option>MEDIUM</option>
 <option>HIGH</option>
+
 </select>
 
 <span v-else>{{task.priority}}</span>
@@ -331,11 +411,13 @@ v-model="task.priority"
 
 <select
 v-if="editingTaskId===task.id"
-v-model="task.taskStatus"
+v-model="editingTask.taskStatus"
 >
+
 <option>TODO</option>
 <option>IN_PROGRESS</option>
 <option>DONE</option>
+
 </select>
 
 <span v-else>{{task.taskStatus}}</span>
@@ -347,10 +429,10 @@ v-model="task.taskStatus"
 <input
 v-if="editingTaskId===task.id"
 type="datetime-local"
-v-model="task.dueDate"
+v-model="editingTask.dueDate"
 />
 
-<span v-else>{{formatDate(task.dueDate)}}</span>
+<span v-else>{{task.dueDate}}</span>
 
 </td>
 
@@ -359,7 +441,7 @@ v-model="task.dueDate"
 <button
 v-if="editingTaskId!==task.id"
 class="edit"
-@click="editTask(task)"
+@click="startEdit(task)"
 >
 Edit
 </button>
@@ -367,7 +449,7 @@ Edit
 <button
 v-if="editingTaskId===task.id"
 class="save"
-@click="saveTask(task)"
+@click="saveEdit"
 >
 Save
 </button>
@@ -416,6 +498,8 @@ min-height:100vh;
 font-family:Arial;
 }
 
+/* HEADER */
+
 .header{
 height:70px;
 background:white;
@@ -437,10 +521,6 @@ width:38px;
 height:38px;
 border-radius:50%;
 background:#3b82f6;
-}
-
-.username{
-font-weight:600;
 }
 
 .admin-btn{
@@ -467,6 +547,8 @@ margin:auto;
 padding:30px;
 }
 
+/* CREATE */
+
 .create-card{
 background:white;
 padding:20px;
@@ -489,30 +571,34 @@ border-radius:6px;
 
 .create-row button{
 background:#3b82f6;
-border:none;
 color:white;
-padding:6px 12px;
+border:none;
+padding:6px 14px;
 border-radius:6px;
 }
 
-textarea{
+.description{
 width:100%;
 padding:8px;
 border:1px solid #ddd;
 border-radius:6px;
 }
 
-.filter-row{
-display:flex;
-gap:10px;
+/* FILTER */
+
+.filter-card{
+background:white;
+padding:20px;
+border-radius:10px;
 margin-bottom:20px;
 }
 
-.filter-row select{
-padding:6px;
-border:1px solid #ddd;
-border-radius:6px;
+.filter-row{
+display:flex;
+gap:10px;
 }
+
+/* TABLE */
 
 .table-card{
 background:white;
@@ -562,6 +648,8 @@ padding:5px 10px;
 border-radius:5px;
 }
 
+/* PAGINATION */
+
 .pagination{
 display:flex;
 justify-content:center;
@@ -575,6 +663,20 @@ border:none;
 color:white;
 padding:6px 14px;
 border-radius:6px;
+}
+
+/* MESSAGES */
+
+.error{
+color:#ef4444;
+margin-bottom:10px;
+font-weight:500;
+}
+
+.success{
+color:#10b981;
+margin-bottom:10px;
+font-weight:500;
 }
 
 </style>
