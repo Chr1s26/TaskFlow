@@ -9,11 +9,12 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/Chr1s26/TaskFlow.git'
-            }
-        }
+         stage('Checkout') {
+             steps {
+                 git branch: 'main',
+                     url: 'https://github.com/Chr1s26/TaskFlow.git'
+             }
+         }
 
         stage('Build Backend') {
             steps {
