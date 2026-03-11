@@ -48,10 +48,11 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
-            steps {
+    stage('Deploy to EC2') {
+        steps {
+            sshagent(['ec2-key']) {
                 sh '''
-                ssh -o StrictHostKeyChecking=no ubuntu@3.106.240.218 "
+                ssh -o StrictHostKeyChecking=no ubuntu@$EC2_IP "
                 cd taskflow &&
                 docker compose pull &&
                 docker compose up -d
@@ -59,6 +60,7 @@ pipeline {
                 '''
             }
         }
+    }
 
     }
 }
