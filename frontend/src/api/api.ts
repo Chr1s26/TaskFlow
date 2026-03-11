@@ -22,7 +22,7 @@ api.interceptors.request.use((config) => {
   if (
     token &&
     config.url &&
-    !publicEndpoints.some(e => config.url.startsWith(e))
+    !publicEndpoints.some(e => config.url?.startsWith(e))
   ) {
     config.headers.Authorization = `Bearer ${token}`
   }

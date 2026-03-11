@@ -46,6 +46,7 @@ public class TaskServiceTest {
         request.setTitle("Test Task");
         request.setDescription("description");
         request.setPriority(Priority.HIGH);
+        request.setStatus(TaskStatus.TODO);
         request.setDueDate(LocalDateTime.now());
 
         when(userService.getCurrentUser()).thenReturn(user);

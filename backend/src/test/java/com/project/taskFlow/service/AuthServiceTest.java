@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -83,6 +84,7 @@ public class AuthServiceTest {
     }
 
     @Test
+    @WithMockUser
     void shouldReturnUserDetails() {
 
         Authentication authentication = mock(Authentication.class);
