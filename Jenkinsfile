@@ -52,7 +52,7 @@ pipeline {
         steps {
             sshagent(['ec2-key']) {
                 sh '''
-                ssh -o StrictHostKeyChecking=no ubuntu@$EC2_IP "
+                ssh -o StrictHostKeyChecking=no ubuntu@3.106.240.218 "
                 cd taskflow &&
                 docker compose pull &&
                 docker compose up -d
